@@ -1,0 +1,20 @@
+Support Guide - ParsCRM
+
+Support channels:
+- Email: support@parscrm.example
+- Phone: +98-21-0000-0000
+- In-app ticket form
+
+Support hours:
+- Saturday to Wednesday: 09:00 to 18:00 Iran time
+- Thursday: 09:00 to 13:00 Iran time
+- Friday: Closed
+
+Response targets:
+- Critical issues: first response within 1 hour
+- High issues: first response within 4 hours
+- Normal issues: first response within 1 business day
+
+Escalation policy:
+- If issue is unresolved for 24 hours, escalate to support lead.
+- If SLA is at risk, notify product and engineering managers.

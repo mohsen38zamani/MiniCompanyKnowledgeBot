@@ -1,0 +1,19 @@
+Product Introduction - ParsCRM
+
+ParsCRM helps Iranian distributors and service companies manage customer lifecycle from lead capture to post-sale support.
+
+Core modules:
+- Lead and pipeline management
+- Contact and account history
+- Ticketing and SLA tracking
+- Team activity reporting
+
+MVP scope for this project:
+- Read company documents from local docs folder
+- Let user ask a question in a simple web interface
+- Return grounded answer based only on local documents
+
+Non-goals for MVP:
+- Multi-tenant auth
+- External vector database
+- Billing and subscription management

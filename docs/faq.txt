@@ -1,0 +1,16 @@
+FAQ - ParsCRM
+
+Q: What is ParsCRM?
+A: ParsCRM is a lightweight customer relationship management platform built for small and medium businesses in Iran.
+
+Q: Which teams can use ParsCRM?
+A: Sales, support, operations, and customer success teams can use it.
+
+Q: Does ParsCRM support Persian language?
+A: Product UI supports Persian and English. For this technical test, only English content is used.
+
+Q: How is customer data organized?
+A: Data is organized by accounts, contacts, deals, and support tickets.
+
+Q: Is there a free trial?
+A: Yes, there is a 14-day trial with all core features enabled.
