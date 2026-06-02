@@ -19,10 +19,24 @@ class DocumentLoader
 
         $documents = [];
 
-        foreach (File::files($docsPath) as $file) {
+        $files = collect(File::files($docsPath))
+            ->filter(function (\SplFileInfo $file): bool {
+                $extension = mb_strtolower($file->getExtension());
+
+                return in_array($extension, ['txt', 'md'], true);
+            })
+            ->sortBy(fn (\SplFileInfo $file) => $file->getFilename())
+            ->values();
+
+        foreach ($files as $file) {
+            $content = trim(File::get($file->getPathname()));
+            if ($content === '') {
+                continue;
+            }
+
             $documents[] = [
                 'title' => pathinfo($file->getFilename(), PATHINFO_FILENAME),
-                'content' => trim(File::get($file->getPathname())),
+                'content' => $content,
             ];
         }
 

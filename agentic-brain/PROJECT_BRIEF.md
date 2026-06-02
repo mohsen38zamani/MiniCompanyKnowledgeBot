@@ -9,6 +9,8 @@ Build a Laravel-based knowledge bot that answers user questions using only local
 - Simple UI and API for asking questions
 - Deterministic retrieval from local docs
 - Grounded answers without external hallucinated content
+- Structured API contract with machine-readable errors
+- Eval automation command for repeatable quality checks
 
 ## Constraints
 - Keep architecture simple and maintainable

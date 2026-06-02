@@ -56,7 +56,7 @@
             resultBox.style.display = 'block';
 
             if (!response.ok) {
-                answerText.textContent = payload.message || 'Validation failed.';
+                answerText.textContent = payload?.error?.message || payload.message || 'Validation failed.';
                 sourcesText.textContent = '-';
                 return;
             }

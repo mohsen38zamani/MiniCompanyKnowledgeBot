@@ -22,6 +22,10 @@ class KnowledgeBotTest extends TestCase
             ->assertJsonPath('success', true)
             ->assertJsonPath('meta.grounded', true)
             ->assertJsonPath('meta.fallback', false);
+        $this->assertMatchesRegularExpression(
+            '/^[0-9a-fA-F-]{36}$/',
+            (string) $response->json('meta.trace_id')
+        );
 
         $this->assertStringContainsStringIgnoringCase(
             'crm',
