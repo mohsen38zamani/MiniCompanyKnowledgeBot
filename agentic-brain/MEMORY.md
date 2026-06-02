@@ -6,6 +6,7 @@
 - Keep a versioned API path (`/api/v1/knowledge/ask`) and retain legacy path for compatibility.
 - Standardize API errors with machine-friendly `error.code`.
 - Include `meta.trace_id` in success responses for log correlation.
+- Persist all Q&A interactions in a dedicated `knowledgebot` log channel for auditability.
 
 ## Learnings
 - A strict grounded-answer policy reduces noisy responses in early versions.
@@ -20,3 +21,4 @@
 - Added `knowledge:eval` command to automate scenario checks from `EVALS.md`.
 - Improved chunking to avoid oversize chunks when lines are too long.
 - Refined answer strategy to return one precise grounded snippet with a single source.
+- Added complete Q&A logging (question, answer, sources, snippets, trace, endpoint, client IP).

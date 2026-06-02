@@ -24,11 +24,16 @@ class KnowledgeBotController extends Controller
         $result = $answerService->answer($validated['question']);
         $isFallback = $result['sources'] === [];
 
-        Log::info('Knowledge bot question answered.', [
+        Log::channel('knowledgebot')->info('Knowledge bot question answered.', [
             'trace_id' => $traceId,
             'question' => $validated['question'],
+            'answer' => $result['answer'],
+            'sources' => $result['sources'],
+            'snippets' => $result['snippets'],
             'grounded' => ! $isFallback,
-            'sources_count' => count($result['sources']),
+            'fallback' => $isFallback,
+            'endpoint' => $request->path(),
+            'client_ip' => $request->ip(),
         ]);
 
         return response()->json([

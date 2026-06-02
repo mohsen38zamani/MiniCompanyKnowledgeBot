@@ -52,3 +52,9 @@ Run `php artisan test`.
 
 ## Eval Automation
 Run `php artisan knowledge:eval` to execute scenarios from `agentic-brain/EVALS.md`.
+
+## Q&A Logs
+All question/answer interactions are logged to:
+- `storage/logs/knowledge-bot.log`
+
+Each entry includes question, answer, sources, snippets, grounded/fallback flags, `trace_id`, endpoint, and client IP.
