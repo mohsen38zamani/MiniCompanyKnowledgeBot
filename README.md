@@ -7,6 +7,10 @@ Backend-first Laravel application that answers user questions using only local c
 - Deterministic retrieval pipeline (no external vector database)
 - Simple web UI + JSON API
 
+## Requirements
+- PHP 8.1+
+- Composer 2+
+
 ## Project Structure
 - `docs/`: source knowledge documents
 - `app/Services/Knowledge/`: retrieval and answering logic
@@ -29,6 +33,24 @@ Payload:
 ```json
 {
   "question": "What is ParsCRM?"
+}
+```
+
+Success response shape:
+```json
+{
+  "success": true,
+  "data": {
+    "question": "What is ParsCRM?",
+    "answer": "ParsCRM is a lightweight customer relationship management platform...",
+    "sources": ["faq"],
+    "snippets": ["ParsCRM is a lightweight customer relationship management platform..."]
+  },
+  "meta": {
+    "grounded": true,
+    "fallback": false,
+    "trace_id": "uuid"
+  }
 }
 ```
 
@@ -55,6 +77,6 @@ Run `php artisan knowledge:eval` to execute scenarios from `agentic-brain/EVALS.
 
 ## Q&A Logs
 All question/answer interactions are logged to:
-- `storage/logs/knowledge-bot.log`
+- `storage/logs/knowledge-bot-YYYY-MM-DD.log` (daily rotated)
 
 Each entry includes question, answer, sources, snippets, grounded/fallback flags, `trace_id`, endpoint, and client IP.
