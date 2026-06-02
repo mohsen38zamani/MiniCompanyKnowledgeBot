@@ -6,6 +6,7 @@ Backend-first Laravel application that answers user questions using only local c
 - Laravel 10 (PHP 8.1 compatible)
 - Deterministic retrieval pipeline (no external vector database)
 - Simple web UI + JSON API
+- Full Q&A audit logging
 
 ## Requirements
 - PHP 8.1+
@@ -15,6 +16,7 @@ Backend-first Laravel application that answers user questions using only local c
 - `docs/`: source knowledge documents
 - `app/Services/Knowledge/`: retrieval and answering logic
 - `agentic-brain/`: project memory and execution artifacts
+- `sample-questions.txt`: grounded/fallback smoke test question set
 
 ## Run
 1. `cp .env.example .env`
@@ -74,6 +76,11 @@ Run `php artisan test`.
 
 ## Eval Automation
 Run `php artisan knowledge:eval` to execute scenarios from `agentic-brain/EVALS.md`.
+
+Quick smoke-check for full sample set:
+```bash
+php -r 'require "vendor/autoload.php"; $app=require "bootstrap/app.php"; $kernel=$app->make(Illuminate\Contracts\Console\Kernel::class); $kernel->bootstrap(); $svc=$app->make(App\Services\Knowledge\AnswerService::class); $lines=file("sample-questions.txt", FILE_IGNORE_NEW_LINES|FILE_SKIP_EMPTY_LINES); $mode="grounded"; $pass=0; $total=0; foreach($lines as $line){ $trim=trim($line); if(str_starts_with($trim,"Fallback-check questions")){ $mode="fallback"; continue;} $parts=explode(") ",$trim,2); if(count($parts)!==2 || !ctype_digit($parts[0])){ continue;} $q=$parts[1]; $r=$svc->answer($q); $ok = $mode==="grounded" ? ($r["sources"]!==[]) : ($r["sources"]===[]); $total++; if($ok){$pass++;} } echo "RESULT: $pass/$total\n";'
+```
 
 ## Q&A Logs
 All question/answer interactions are logged to:
