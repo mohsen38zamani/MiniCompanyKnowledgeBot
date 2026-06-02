@@ -19,4 +19,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::prefix('v1')->group(function () {
+    Route::post('/knowledge/ask', [KnowledgeBotController::class, 'ask'])
+        ->name('api.v1.knowledge.ask');
+});
+
 Route::post('/knowledge/ask', [KnowledgeBotController::class, 'ask']);

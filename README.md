@@ -21,13 +21,29 @@ Backend-first Laravel application that answers user questions using only local c
 Then open `http://127.0.0.1:8000`.
 
 ## API
-- `POST /ask`
-- `POST /api/knowledge/ask`
+- `POST /ask` (web endpoint)
+- `POST /api/v1/knowledge/ask` (versioned API, recommended)
+- `POST /api/knowledge/ask` (legacy compatibility)
 
 Payload:
 ```json
 {
   "question": "What is ParsCRM?"
+}
+```
+
+Success response includes `meta.trace_id` for log correlation.
+Validation errors return a structured shape:
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_FAILED",
+    "message": "The given data was invalid.",
+    "details": {
+      "question": ["The question field must be at least 3 characters."]
+    }
+  }
 }
 ```
 
