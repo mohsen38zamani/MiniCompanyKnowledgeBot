@@ -1,0 +1,30 @@
+Questions that should return correct grounded answers:
+
+1) What is ParsCRM?
+2) Which teams can use ParsCRM?
+3) Does ParsCRM support Persian language?
+4) How is customer data organized in ParsCRM?
+5) Is there a free trial for ParsCRM?
+6) How long is the ParsCRM free trial?
+7) What are the core modules of ParsCRM?
+8) What does the MVP scope include in this project?
+9) What are the non-goals for this MVP?
+10) What support channels are available?
+11) What is the support email?
+12) What is the support phone number?
+13) What are support hours on Saturday to Wednesday?
+14) What are support hours on Thursday?
+15) Is support available on Friday?
+16) What is the first response target for critical issues?
+17) What is the first response target for high issues?
+18) What is the first response target for normal issues?
+19) When should an unresolved issue be escalated?
+20) Who should be notified if SLA is at risk?
+
+Fallback-check questions (system should say info is not available in docs):
+
+21) What is the refund policy?
+22) What is the pricing plan?
+23) Does ParsCRM have a mobile app?
+24) What database does ParsCRM use?
+25) Where is the company headquarters located?
