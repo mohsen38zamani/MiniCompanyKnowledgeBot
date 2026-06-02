@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AskKnowledgeQuestionRequest;
 use App\Services\Knowledge\AnswerService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class KnowledgeBotController extends Controller
@@ -14,14 +14,25 @@ class KnowledgeBotController extends Controller
         return view('knowledge-bot');
     }
 
-    public function ask(Request $request, AnswerService $answerService): JsonResponse
+    public function ask(AskKnowledgeQuestionRequest $request, AnswerService $answerService): JsonResponse
     {
-        $validated = $request->validate([
-            'question' => ['required', 'string', 'min:3', 'max:500'],
-        ]);
+        $validated = $request->validated();
 
         $result = $answerService->answer($validated['question']);
+        $isFallback = $result['sources'] === [];
 
-        return response()->json($result);
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'question' => $validated['question'],
+                'answer' => $result['answer'],
+                'sources' => $result['sources'],
+                'snippets' => $result['snippets'],
+            ],
+            'meta' => [
+                'grounded' => ! $isFallback,
+                'fallback' => $isFallback,
+            ],
+        ]);
     }
 }

@@ -33,3 +33,6 @@ Payload:
 
 ## Tests
 Run `php artisan test`.
+
+## Eval Automation
+Run `php artisan knowledge:eval` to execute scenarios from `agentic-brain/EVALS.md`.

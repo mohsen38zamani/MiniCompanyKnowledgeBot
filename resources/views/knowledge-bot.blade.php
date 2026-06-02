@@ -61,9 +61,11 @@
                 return;
             }
 
-            answerText.textContent = payload.answer;
-            sourcesText.textContent = (payload.sources && payload.sources.length > 0)
-                ? payload.sources.join(', ')
+            const data = payload.data || {};
+
+            answerText.textContent = data.answer || 'No answer returned.';
+            sourcesText.textContent = (data.sources && data.sources.length > 0)
+                ? data.sources.join(', ')
                 : 'No supporting source found';
         });
     </script>

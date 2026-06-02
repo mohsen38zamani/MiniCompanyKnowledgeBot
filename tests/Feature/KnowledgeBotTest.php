@@ -14,13 +14,20 @@ class KnowledgeBotTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertJsonStructure(['answer', 'sources', 'snippets']);
+            ->assertJsonStructure([
+                'success',
+                'data' => ['question', 'answer', 'sources', 'snippets'],
+                'meta' => ['grounded', 'fallback'],
+            ])
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('meta.grounded', true)
+            ->assertJsonPath('meta.fallback', false);
 
         $this->assertStringContainsStringIgnoringCase(
             'crm',
-            $response->json('answer', '')
+            $response->json('data.answer', '')
         );
-        $this->assertNotEmpty($response->json('sources', []));
+        $this->assertNotEmpty($response->json('data.sources', []));
     }
 
     public function test_it_returns_fallback_for_unknown_question(): void
@@ -31,8 +38,11 @@ class KnowledgeBotTest extends TestCase
 
         $response
             ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('meta.grounded', false)
+            ->assertJsonPath('meta.fallback', true)
             ->assertJsonPath(
-                'answer',
+                'data.answer',
                 'I do not have enough information in the provided company documents to answer this question.'
             );
     }
