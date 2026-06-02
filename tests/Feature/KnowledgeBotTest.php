@@ -34,6 +34,25 @@ class KnowledgeBotTest extends TestCase
         $this->assertNotEmpty($response->json('data.sources', []));
     }
 
+    public function test_it_returns_concise_answer_and_single_source_for_specific_fact(): void
+    {
+        $response = $this->postJson('/api/v1/knowledge/ask', [
+            'question' => 'Does ParsCRM support Persian language?',
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('meta.grounded', true)
+            ->assertJsonCount(1, 'data.sources')
+            ->assertJsonCount(1, 'data.snippets');
+
+        $answer = (string) $response->json('data.answer');
+        $this->assertStringContainsStringIgnoringCase('persian', $answer);
+        $this->assertStringContainsStringIgnoringCase('english', $answer);
+        $this->assertStringNotContainsStringIgnoringCase('Core modules', $answer);
+    }
+
     public function test_it_returns_fallback_for_unknown_question_from_v1_api_endpoint(): void
     {
         $response = $this->postJson('/api/v1/knowledge/ask', [
@@ -65,5 +84,37 @@ class KnowledgeBotTest extends TestCase
                 'success',
                 'error' => ['code', 'message', 'details'],
             ]);
+    }
+
+    public function test_it_returns_free_trial_duration_for_how_long_question(): void
+    {
+        $response = $this->postJson('/api/v1/knowledge/ask', [
+            'question' => 'How long is the ParsCRM free trial?',
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('meta.grounded', true);
+
+        $answer = (string) $response->json('data.answer');
+        $this->assertStringContainsStringIgnoringCase('14-day', $answer);
+    }
+
+    public function test_it_returns_fallback_for_mobile_app_question(): void
+    {
+        $response = $this->postJson('/api/v1/knowledge/ask', [
+            'question' => 'Does ParsCRM have a mobile app?',
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('meta.grounded', false)
+            ->assertJsonPath('meta.fallback', true)
+            ->assertJsonPath(
+                'data.answer',
+                'I do not have enough information in the provided company documents to answer this question.'
+            );
     }
 }

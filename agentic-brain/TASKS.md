@@ -15,6 +15,8 @@
 - [x] Add `api/v1` route and trace logging
 - [x] Add eval automation command (`knowledge:eval`)
 - [x] Improve deterministic ingestion and chunk safety
+- [x] Improve answer precision to return concise single-snippet responses
+- [x] Tune eval matcher to reduce false negative checks
 
 ## Next
 - [ ] Add rate limiting for ask endpoints

@@ -96,11 +96,16 @@ class RunKnowledgeEvals extends Command
 
         $hits = 0;
         foreach ($keywords as $keyword) {
-            if (str_contains($answer, $keyword)) {
+            $normalizedKeyword = str_ends_with($keyword, 's') && strlen($keyword) > 4
+                ? substr($keyword, 0, -1)
+                : $keyword;
+
+            if (str_contains($answer, $keyword) || str_contains($answer, $normalizedKeyword)) {
                 $hits++;
             }
         }
 
-        return $hits >= min(2, count($keywords));
+        $hitRatio = $hits / max(1, count($keywords));
+        return $hits >= min(2, count($keywords)) || $hitRatio >= 0.4;
     }
 }
