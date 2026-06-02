@@ -15,9 +15,12 @@
 - [x] Add `api/v1` route and trace logging
 - [x] Add eval automation command (`knowledge:eval`)
 - [x] Improve deterministic ingestion and chunk safety
+- [x] Improve answer precision to return concise single-snippet responses
+- [x] Tune eval matcher to reduce false negative checks
+- [x] Log all Q&A interactions to a dedicated `knowledgebot` log file
 
 ## Next
 - [ ] Add rate limiting for ask endpoints
-- [ ] Add response-time and error metrics logging
+- [ ] Add response-time and error metrics dashboarding
 - [ ] Add optional citation offsets per snippet
 - [ ] Add caching for docs/chunks to reduce repeated IO
