@@ -8,12 +8,21 @@ class AnswerService
      * @var array<int, string>
      */
     private array $entityTokens = ['parscrm', 'crm'];
+    /**
+     * @var array<int, string>
+     */
+    private array $intentTokens = [
+        'email', 'phone', 'hour', 'thursday', 'friday', 'saturday', 'sunday',
+        'monday', 'tuesday', 'wednesday', 'critical', 'high', 'normal',
+        'module', 'mvp', 'scope', 'goal', 'channel',
+    ];
 
     /**
      * @var array<int, string>
      */
     private array $stopWords = [
         'what', 'which', 'where', 'when', 'how', 'does', 'is', 'are', 'the', 'and', 'for', 'with', 'from', 'into', 'about', 'policy',
+        'use', 'uses', 'using', 'available',
     ];
 
     public function __construct(
@@ -59,6 +68,9 @@ class AnswerService
         if ($best === null || $bestScore < 0.34) {
             return $this->fallbackResponse();
         }
+        if ($this->isDatabaseQuestion($questionTokens) && ! $this->looksLikeDatabaseAnswer($best['snippet'])) {
+            return $this->fallbackResponse();
+        }
 
         return [
             'answer' => $best['snippet'],
@@ -83,6 +95,14 @@ class AnswerService
         $moduleBlock = $this->extractModuleBlockIfRelevant($question, $content);
         if ($moduleBlock !== null) {
             $candidates[] = ['snippet' => $moduleBlock, 'score' => 0.9];
+        }
+
+        $sectionBlock = $this->extractSectionBlockIfRelevant($question, $content);
+        if ($sectionBlock !== null) {
+            $sectionScore = $this->overlapScore($questionTokens, $this->tokenize($sectionBlock));
+            if ($sectionScore > 0) {
+                $candidates[] = ['snippet' => $sectionBlock, 'score' => $sectionScore + 0.4];
+            }
         }
 
         $lines = preg_split('/\R+/', $content) ?: [];
@@ -170,6 +190,53 @@ class AnswerService
         return null;
     }
 
+    private function extractSectionBlockIfRelevant(string $question, string $content): ?string
+    {
+        $questionTokens = $this->tokenize($question);
+        if ($questionTokens === []) {
+            return null;
+        }
+
+        $lines = preg_split('/\R+/', $content) ?: [];
+        foreach ($lines as $index => $line) {
+            $line = trim($line);
+            if (! str_ends_with($line, ':')) {
+                continue;
+            }
+
+            $headerTokens = $this->tokenize(rtrim($line, ':'));
+            if ($headerTokens === []) {
+                continue;
+            }
+
+            $headerHits = count(array_intersect($questionTokens, $headerTokens));
+            if ($headerHits === 0) {
+                continue;
+            }
+
+            $block = [$line];
+            for ($i = $index + 1; $i < count($lines); $i++) {
+                $next = trim($lines[$i]);
+                if ($next === '') {
+                    continue;
+                }
+                if (str_ends_with($next, ':')) {
+                    break;
+                }
+                if (! str_starts_with($next, '-')) {
+                    break;
+                }
+                $block[] = $next;
+            }
+
+            if (count($block) > 1) {
+                return implode(' ', $block);
+            }
+        }
+
+        return null;
+    }
+
     /**
      * @return array<int, string>
      */
@@ -202,7 +269,10 @@ class AnswerService
 
         $intersection = array_values(array_intersect($questionTokens, $candidateTokens));
         $hits = count($intersection);
-        if (count($questionTokens) >= 3 && $hits < 2) {
+        $questionIntentTokens = array_values(array_intersect($questionTokens, $this->intentTokens));
+        $intentMatched = count(array_intersect($questionIntentTokens, $candidateTokens)) > 0;
+
+        if (count($questionTokens) >= 3 && $hits < 2 && ! $intentMatched) {
             return 0.0;
         }
         if (count($questionTokens) < 3 && $hits < 1) {
@@ -235,6 +305,30 @@ class AnswerService
         }
 
         return $score;
+    }
+
+    /**
+     * @param array<int, string> $questionTokens
+     */
+    private function isDatabaseQuestion(array $questionTokens): bool
+    {
+        return in_array('database', $questionTokens, true);
+    }
+
+    private function looksLikeDatabaseAnswer(string $snippet): bool
+    {
+        $tokens = $this->tokenize($snippet);
+        $knownDatabaseTerms = [
+            'mysql', 'postgresql', 'postgres', 'mariadb', 'sqlite', 'mongodb', 'sqlserver', 'oracle',
+        ];
+
+        foreach ($knownDatabaseTerms as $term) {
+            if (in_array($term, $tokens, true)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

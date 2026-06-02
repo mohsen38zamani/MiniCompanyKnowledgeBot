@@ -117,4 +117,65 @@ class KnowledgeBotTest extends TestCase
                 'I do not have enough information in the provided company documents to answer this question.'
             );
     }
+
+    public function test_it_returns_grounded_answer_for_support_channels_question(): void
+    {
+        $response = $this->postJson('/api/v1/knowledge/ask', [
+            'question' => 'What support channels are available?',
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('meta.grounded', true);
+
+        $answer = (string) $response->json('data.answer');
+        $this->assertStringContainsStringIgnoringCase('email', $answer);
+        $this->assertStringContainsStringIgnoringCase('phone', $answer);
+    }
+
+    public function test_it_returns_grounded_answer_for_support_phone_question(): void
+    {
+        $response = $this->postJson('/api/v1/knowledge/ask', [
+            'question' => 'What is the support phone number?',
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('meta.grounded', true);
+
+        $answer = (string) $response->json('data.answer');
+        $this->assertStringContainsStringIgnoringCase('phone', $answer);
+        $this->assertStringContainsString('+98-21-0000-0000', $answer);
+    }
+
+    public function test_it_returns_grounded_answer_for_mvp_scope_question(): void
+    {
+        $response = $this->postJson('/api/v1/knowledge/ask', [
+            'question' => 'What does the MVP scope include in this project?',
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('meta.grounded', true);
+    }
+
+    public function test_it_returns_fallback_for_database_question(): void
+    {
+        $response = $this->postJson('/api/v1/knowledge/ask', [
+            'question' => 'What database does ParsCRM use?',
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('meta.grounded', false)
+            ->assertJsonPath('meta.fallback', true)
+            ->assertJsonPath(
+                'data.answer',
+                'I do not have enough information in the provided company documents to answer this question.'
+            );
+    }
 }
