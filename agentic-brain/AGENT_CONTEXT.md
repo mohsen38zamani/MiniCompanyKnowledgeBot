@@ -1,21 +1,33 @@
 # Agent Context
 
 ## What This Project Is
-A backend-first Laravel project that provides grounded Q&A on a fictional CRM company using local text files.
+A backend-first Laravel knowledge bot for a fictional CRM company. It answers only from local documentation and avoids unsupported claims by using strict fallback logic.
+
+## Source of Truth
+- Docs corpus: `docs/`
+- Core logic: `app/Services/Knowledge/`
+- Web/API entry: `app/Http/Controllers/KnowledgeBotController.php`
+- Eval command: `php artisan knowledge:eval`
+- Q&A logs: `storage/logs/knowledge-bot-YYYY-MM-DD.log`
 
 ## Current Technical Direction
-- Read plain text files from `docs/`
-- Split text into small chunks
-- Rank chunks by lexical overlap with user question
-- Generate response from highest-ranked chunks only
-- Serve both web ask endpoint and versioned API endpoint
-- Return structured success/error payloads with trace IDs
-- Log every Q&A interaction to `storage/logs/knowledge-bot.log` via `knowledgebot` channel
+- Deterministic ingestion (`txt`/`md`, sorted, non-empty docs only)
+- Safe chunking and intent-aware scoring
+- Single concise snippet output with one primary source
+- Guardrails for false positives (unsupported topics -> fallback)
+- Structured API payload:
+  - success: `success`, `data`, `meta`
+  - errors: `success=false`, `error.code`, `error.message`, `error.details`
+
+## Branch Strategy
+- Active development branch: `dev`
+- `main` and `stage` intentionally kept at base state for manual PR flow
+- Do not push feature changes directly to `main`/`stage`
 
 ## How To Continue
-1. Keep services in `app/Services/Knowledge/`
-2. Keep controllers thin
-3. Keep API backward-compatible while extending `/api/v1/*`
-4. Add tests for retrieval, fallback, and error contract behavior
-5. Keep Q&A logs privacy-aware (avoid sensitive data growth)
-6. Update `MEMORY.md` and `TASKS.md` when decisions change
+1. Keep controllers thin; push logic into services
+2. Add behavior only with matching regression tests
+3. Preserve backward compatibility for `/api/knowledge/ask`
+4. Keep `/api/v1/*` as preferred contract
+5. Keep logs privacy-aware and operationally useful
+6. Update `PROJECT_BRIEF.md`, `MEMORY.md`, `TASKS.md`, `EVALS.md` whenever behavior changes
